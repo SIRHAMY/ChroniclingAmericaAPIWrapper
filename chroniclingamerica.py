@@ -118,6 +118,12 @@ class ChronAm():
 
 
 if __name__ == "__main__":
+
+    #Log initial start time of API hit
+    import time
+    timeStart = time.clock()
+    print("Operation started at: " + repr(timeStart))
+
     parser = argparse.ArgumentParser(
         description="API to search Chronicling America",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -155,6 +161,11 @@ if __name__ == "__main__":
 
         print('http://chroniclingamerica.loc.gov' + item['id'] +
               "#words=" + args.searchterm)
+
+    #Perform stats ops after finished going through results
+    timeEnd = time.clock()
+    print("Operation ended at: " + repr(timeEnd))
+    print("Elapsed time: " + repr(timeEnd - timeStart))
 
 
 # End of file
