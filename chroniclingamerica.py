@@ -100,9 +100,13 @@ class ChronAm():
     def get_data(self, page_number):
         """Fetches a page of items from the API"""
 
-        percent = 100.0 * page_number / self.total_pages
-        print('Fetching page %i of %i ... %f%%' % (
-            page_number, self.total_pages, percent))
+        if(args.write is None) :
+            percent = 100.0 * page_number / self.total_pages
+            print('Fetching page %i of %i ... %f%%' % (
+                page_number, self.total_pages, percent))
+        else:
+            if(page_number % 100 == 0):
+                print("Fetched to page: " + page_number)
 
         r = requests.get(self.url % page_number)
         resp = (json.loads(r.text))
@@ -143,7 +147,7 @@ if __name__ == "__main__":
 
     fetcher = ChronAm(args.searchterm)
 
-    APIFetchData = {}
+    APIFetchData =[]
 
     for item in fetcher.fetch():
         try:
@@ -183,7 +187,7 @@ if __name__ == "__main__":
 
     #Write data to file if in --write mode
     if(args.write):
-        with open(args.write + ".json", 'w', encoding='utf-8') as file:
+        with open(args.write + ".json", 'w') as file:
             json.dump(APIFetchData, file)
 
     #Perform stats ops after finished going through results
