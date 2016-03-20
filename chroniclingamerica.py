@@ -99,6 +99,7 @@ class ChronAm():
 
     def get_data(self, page_number):
         """Fetches a page of items from the API"""
+
         percent = 100.0 * page_number / self.total_pages
         print('Fetching page %i of %i ... %f%%' % (
             page_number, self.total_pages, percent))
@@ -129,7 +130,11 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('searchterm', help='Phrase to search for')
     parser.add_argument('-y', '--year', type=int, help='Max year')
+    parser.add_argument('-w', '--write', type=str, help="Write to file name")
     args = parser.parse_args()
+
+    if(args.write):
+         print("Writing to file: " + args.write + ".json")
 
     import os
     from pprint import pprint
@@ -138,29 +143,48 @@ if __name__ == "__main__":
 
     fetcher = ChronAm(args.searchterm)
 
-    for item in fetcher.fetch():
-        year = item['date'][:4]
+    APIFetchData = {}
 
-        if args.year and int(year) > args.year:
+    for item in fetcher.fetch():
+        try:
+            year = item['date'][:4]
+
+            if args.year and int(year) > args.year:
+                continue
+
+            # pprint(item.keys())
+            # pprint(item)  # Or do something more interesting
+
+            month = item['date'][4:6]
+            day = item['date'][6:]
+            date = year + "-" + month + "-" + day
+            text = item['ocr_eng']
+            text = text.replace('\\n', os.linesep)
+
+            # If args.write not present, print to commandline
+            if(args.write is None):
+                print("=" * 80)
+                print(item['date'])
+                print(date, item['title'], item['place_of_publication'])
+                print("-" * 80)
+                print_it(text)
+                print("-" * 80)
+
+                print('http://chroniclingamerica.loc.gov' + item['id'] +
+                      "#words=" + args.searchterm)
+
+            else:
+                entry = {'year': year, 'month': month, 'day': day, 'date': date, 
+                        'text': text}
+                APIFetchData.append(entry)
+        except Exception as e:
+            print("EXCEPTION: Threw exception - " + str(e))
             continue
 
-        print("=" * 80)
-        # pprint(item.keys())
-        # pprint(item)  # Or do something more interesting
-
-        month = item['date'][4:6]
-        day = item['date'][6:]
-        print(item['date'])
-        date = year + "-" + month + "-" + day
-        print(date, item['title'], item['place_of_publication'])
-        text = item['ocr_eng']
-        text = text.replace('\\n', os.linesep)
-        print("-" * 80)
-        print_it(text)
-        print("-" * 80)
-
-        print('http://chroniclingamerica.loc.gov' + item['id'] +
-              "#words=" + args.searchterm)
+    #Write data to file if in --write mode
+    if(args.write):
+        with open(args.write + ".json", 'w', encoding='utf-8') as file:
+            json.dump(APIFetchData, file)
 
     #Perform stats ops after finished going through results
     timeEnd = time.clock()
