@@ -151,7 +151,11 @@ if __name__ == "__main__":
     fetcher = ChronAm(args.searchterm)
 
     APIFetchData =[]
-    resultInTimerange = 0;
+    resultsInTimerange = 0;
+
+    if(args.write and args.csv):
+            file = open(args.write + '.csv', 'wb')
+            csvWriter = csv.writer(file)
 
     for item in fetcher.fetch():
         try:
@@ -160,7 +164,7 @@ if __name__ == "__main__":
             if args.year and int(year) > args.year:
                 continue
 
-            resultInTimerange+=1
+            resultsInTimerange+=1
 
             # pprint(item.keys())
             # pprint(item)  # Or do something more interesting
@@ -186,9 +190,12 @@ if __name__ == "__main__":
             else:
                 if(args.csv):
                     #Have to convert from unicode to play nice with csv
-                    entry = "%s ,,, %s ,,, %s ,,, %s" % ( year,
-                     month, day,
-                     text )
+                    #entry = "%s, %s, %s, %s" % ( year,
+                     #month, day,
+                     #text.replace(',', '') )
+                    entry = [year.encode('utf-8'), month.encode('utf-8'), 
+                    day.encode('utf-8'), text.replace(',', '').encode('utf-8')];
+                    csvWriter.writerow(entry);
                 else:
                     entry = {'year': year, 'month': month, 'day': day, 'date': date, 
                             'text': text}
@@ -198,20 +205,20 @@ if __name__ == "__main__":
             continue
 
     #Write data to file if in --write mode
-    if(args.write):
+    if(args.write and args.csv is None):
         if(args.csv):
-            file = open(args.write + '.csv', 'wb')
-            writer = csv.writer(file )
-            for entry in APIFetchData:
-                entry=[s.encode('utf-8') for s in entry]
-                writer.writerow(entry)
+            #file = open(args.write + '.csv', 'wb')
+            #writer = csv.writer(file)
+            #for entry in APIFetchData:
+            #    entry=[s.encode('utf-8') for s in entry]
+            #    writer.writerow(entry)
             file.close()
         else:
             with open(args.write + ".json", 'w') as file:
                 json.dump(APIFetchData, file)
 
     #Print retrieval stats
-    print('Of ')
+    print(str(resultsInTimerange) + " relevant results found in time range");
 
     #Display time for operation to complete
     timeEnd = timeit.default_timer()
