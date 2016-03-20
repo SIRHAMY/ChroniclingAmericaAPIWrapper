@@ -59,6 +59,7 @@ From http://chroniclingamerica.loc.gov/about/api/
 from __future__ import print_function, unicode_literals
 import argparse
 import json
+import csv
 import requests
 
 URL_FORMAT = "http://chroniclingamerica.loc.gov/search/pages/results/?%s"
@@ -106,7 +107,8 @@ class ChronAm():
                 page_number, self.total_pages, percent))
         else:
             if(page_number % 100 == 0):
-                print("Fetched to page: " + page_number)
+                print("Fetched to page: %i of %i" % 
+                    ( page_number, self.total_pages) )
 
         r = requests.get(self.url % page_number)
         resp = (json.loads(r.text))
@@ -135,6 +137,7 @@ if __name__ == "__main__":
     parser.add_argument('searchterm', help='Phrase to search for')
     parser.add_argument('-y', '--year', type=int, help='Max year')
     parser.add_argument('-w', '--write', type=str, help="Write to file name")
+    parser.add_argument('--csv', const=csv, nargs='?', help="File write to CSV")
     args = parser.parse_args()
 
     if(args.write):
@@ -148,6 +151,7 @@ if __name__ == "__main__":
     fetcher = ChronAm(args.searchterm)
 
     APIFetchData =[]
+    resultInTimerange = 0;
 
     for item in fetcher.fetch():
         try:
@@ -155,6 +159,8 @@ if __name__ == "__main__":
 
             if args.year and int(year) > args.year:
                 continue
+
+            resultInTimerange+=1
 
             # pprint(item.keys())
             # pprint(item)  # Or do something more interesting
@@ -178,8 +184,14 @@ if __name__ == "__main__":
                       "#words=" + args.searchterm)
 
             else:
-                entry = {'year': year, 'month': month, 'day': day, 'date': date, 
-                        'text': text}
+                if(args.csv):
+                    #Have to convert from unicode to play nice with csv
+                    entry = "%s, %s, %s, %s" % ( year.decode("utf-8"), 
+                        month.decode("utf-8"), day.decode("utf-8"), 
+                        text.decode("utf-8") )
+                else:
+                    entry = {'year': year, 'month': month, 'day': day, 'date': date, 
+                            'text': text}
                 APIFetchData.append(entry)
         except Exception as e:
             print("EXCEPTION: Threw exception - " + str(e))
@@ -187,10 +199,20 @@ if __name__ == "__main__":
 
     #Write data to file if in --write mode
     if(args.write):
-        with open(args.write + ".json", 'w') as file:
-            json.dump(APIFetchData, file)
+        if(args.csv):
+            file = open(args.write + '.csv', 'wb')
+            writer = csv.writer(file)
+            for entry in APIFetchData:
+                writer.writerow(entry)
+            file.close()
+        else:
+            with open(args.write + ".json", 'w') as file:
+                json.dump(APIFetchData, file)
 
-    #Perform stats ops after finished going through results
+    #Print retrieval stats
+    print('Of ')
+
+    #Display time for operation to complete
     timeEnd = timeit.default_timer()
     print("Operation ended at: " + repr(timeEnd))
     print("Elapsed time: " + repr(timeEnd - timeStart) + "s")
