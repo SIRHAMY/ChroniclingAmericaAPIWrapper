@@ -186,9 +186,9 @@ if __name__ == "__main__":
             else:
                 if(args.csv):
                     #Have to convert from unicode to play nice with csv
-                    entry = "%s, %s, %s, %s" % ( year.decode("utf-8"), 
-                        month.decode("utf-8"), day.decode("utf-8"), 
-                        text.decode("utf-8") )
+                    entry = "%s ,,, %s ,,, %s ,,, %s" % ( year,
+                     month, day,
+                     text )
                 else:
                     entry = {'year': year, 'month': month, 'day': day, 'date': date, 
                             'text': text}
@@ -201,8 +201,9 @@ if __name__ == "__main__":
     if(args.write):
         if(args.csv):
             file = open(args.write + '.csv', 'wb')
-            writer = csv.writer(file)
+            writer = csv.writer(file )
             for entry in APIFetchData:
+                entry=[s.encode('utf-8') for s in entry]
                 writer.writerow(entry)
             file.close()
         else:
