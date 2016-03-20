@@ -121,8 +121,8 @@ class ChronAm():
 if __name__ == "__main__":
 
     #Log initial start time of API hit
-    import time
-    timeStart = time.clock()
+    import timeit
+    timeStart = timeit.default_timer()
     print("Operation started at: " + repr(timeStart))
 
     parser = argparse.ArgumentParser(
@@ -187,9 +187,9 @@ if __name__ == "__main__":
             json.dump(APIFetchData, file)
 
     #Perform stats ops after finished going through results
-    timeEnd = time.clock()
+    timeEnd = timeit.default_timer()
     print("Operation ended at: " + repr(timeEnd))
-    print("Elapsed time: " + repr(timeEnd - timeStart))
+    print("Elapsed time: " + repr(timeEnd - timeStart) + "s")
 
 
 # End of file
