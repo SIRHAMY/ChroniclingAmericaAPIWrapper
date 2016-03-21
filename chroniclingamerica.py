@@ -111,7 +111,11 @@ class ChronAm():
                     ( page_number, self.total_pages) )
 
         r = requests.get(self.url % page_number)
-        resp = (json.loads(r.text))
+        try: 
+            resp = (json.loads(r.text))
+        except ValueError as e:
+            print("ERROR: ValueError - " + str(e))
+            return []
         if len(resp['items']) > 0:
             return resp['items']
         return []
@@ -202,7 +206,7 @@ if __name__ == "__main__":
                 else:
                     entry = {'year': year, 'month': month, 'day': day, 'date': date, 
                             'text': text}
-                APIFetchData.append(entry)
+                    APIFetchData.append(entry)
         except ValueError as e:
             print("ERROR: ValueError - " + str(e))
             continue
