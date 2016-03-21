@@ -141,7 +141,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if(args.write):
-         print("Writing to file: " + args.write + ".json")
+        if(args.csv):
+            print("Writing to file: " + args.write + ".csv")
+        else:
+            print("Writing to file: " + args.write + ".json")
 
     import os
     from pprint import pprint
@@ -200,6 +203,9 @@ if __name__ == "__main__":
                     entry = {'year': year, 'month': month, 'day': day, 'date': date, 
                             'text': text}
                 APIFetchData.append(entry)
+        except ValueError as e:
+            print("ERROR: ValueError - " + str(e))
+            continue
         except Exception as e:
             print("EXCEPTION: Threw exception - " + str(e))
             continue
