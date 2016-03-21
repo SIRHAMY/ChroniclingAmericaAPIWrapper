@@ -116,6 +116,9 @@ class ChronAm():
         except ValueError as e:
             print("ERROR: ValueError - " + str(e))
             return []
+        except requests.exceptions.ReadTimeout as e:
+            print ("EXCEPTION: Read Timed Out - " + str(e) )
+            return []
         if len(resp['items']) > 0:
             return resp['items']
         return []
