@@ -142,6 +142,7 @@ if __name__ == "__main__":
     parser.add_argument('-y', '--year', type=int, help='Max year')
     parser.add_argument('-w', '--write', type=str, help="Write to file name")
     parser.add_argument('--csv', const=csv, nargs='?', help="File write to CSV")
+    parser.add_argument('--count', type=int, help="Max number of returned files")
     args = parser.parse_args()
 
     if(args.write):
@@ -170,8 +171,6 @@ if __name__ == "__main__":
 
             if args.year and int(year) > args.year:
                 continue
-
-            resultsInTimerange+=1
 
             # pprint(item.keys())
             # pprint(item)  # Or do something more interesting
@@ -213,6 +212,10 @@ if __name__ == "__main__":
         except Exception as e:
             print("EXCEPTION: Threw exception - " + str(e))
             continue
+
+        resultsInTimerange+=1
+        if(args.count and resultsInTimerange > args.count):
+            break
 
     #Write data to file if in --write mode
     if(args.write and args.csv is None):
