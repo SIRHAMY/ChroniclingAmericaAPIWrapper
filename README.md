@@ -37,7 +37,7 @@ Currently there's only one parameter.
 ### Examples
 
 * Get up to 1000 news articles containing the term "housewife" that appeared in newspapers from year 1836 - 1900 and write to CSV.
-  * `python chroniclingamerica.py housewife -w outputFile --csv --count 1000`
+  * `python chroniclingamerica.py housewife -y 1900 -w outputFile --csv --count 1000`
 
 ### To Do
 
