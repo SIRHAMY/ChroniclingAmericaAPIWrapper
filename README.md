@@ -17,6 +17,8 @@ for item in fetcher.fetch():
 Calling `fetch()` returns a generator of articles in JSON format. Articles are retrieved one [results] page at a time. 
 To get the total number of pages available, use `get_total_pages()`.
 
+Or just run it from the terminal and then manipulate the output files direclty.
+
 ### Parameters
 
 Currently there's only one parameter.
@@ -30,12 +32,17 @@ Currently there's only one parameter.
 * `--csv`
   * Get the output file in CSV as opposed to JSON. Note, JSON stores data in memory before writing, while CSV writes straight to file. If you are performing operations on a large dataset, use the CSV flag or risk bogging down your machine.
 * `--count`
-  *The maximum number of article results you would like returned
+  * The maximum number of article results you would like returned
+
+### Examples
+
+* Get up to 1000 news articles containing the term "housewife" that appeared in newspapers from year 1836 - 1900 and write to CSV.
+  * `python chroniclingamerica.py housewife -w outputFile --csv --count 1000`
 
 ### To Do
 
 * More search parameters.
-* Allow for multiprocessing - helpful if request handling the bottleneck, not the network speed
+* Allow for multiprocessing - helpful if request handling the bottleneck, not the network speed 
 
 ### Origin
 
