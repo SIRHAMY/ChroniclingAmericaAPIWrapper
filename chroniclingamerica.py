@@ -209,6 +209,9 @@ if __name__ == "__main__":
         except ValueError as e:
             print("ERROR: ValueError - " + str(e))
             continue
+        except KeyboardInterrupt as e:
+            print("INTERRUPT: User stopped operation")
+            break
         except Exception as e:
             print("EXCEPTION: Threw exception - " + str(e))
             continue
